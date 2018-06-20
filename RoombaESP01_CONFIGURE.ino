@@ -3,6 +3,8 @@
 #include <ESP8266mDNS.h>
 #include <SimpleTimer.h>
 #include <Roomba.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 
 
 //USER CONFIGURED SECTION START//
@@ -13,6 +15,11 @@ const int mqtt_port = YOUR_MQTT_SERVER_PORT;
 const char *mqtt_user = "YOUR_MQTT_USERNAME";
 const char *mqtt_pass = "YOUR_MQTT_PASSWORD";
 const char *mqtt_client_name = "Roomba"; // Client connections can't have the same connection name
+
+//pick an OTA password to use when updating over the air
+const char *OTApassword = "YOUR_OTA_PASSWORD";
+const int OTAport = 8266;
+
 //USER CONFIGURED SECTION END//
 
 
@@ -36,6 +43,7 @@ uint8_t tempBuf[10];
 
 void setup_wifi() 
 {
+  WiFi.hostname(mqtt_client_name);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) 
   {
@@ -160,10 +168,17 @@ void setup()
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
   timer.setInterval(5000, sendInfoRoomba);
+
+  ArduinoOTA.setPort(OTAport);
+  ArduinoOTA.setHostname(mqtt_client_name);
+  ArduinoOTA.setPassword((const char *)OTApassword);
+  ArduinoOTA.begin();
+  //Serial.println("Ready");
 }
 
 void loop() 
 {
+  ArduinoOTA.handle();
   if (!client.connected()) 
   {
     reconnect();
@@ -171,5 +186,3 @@ void loop()
   client.loop();
   timer.run();
 }
-
-
