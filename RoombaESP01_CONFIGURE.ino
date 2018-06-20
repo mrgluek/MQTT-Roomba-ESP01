@@ -107,7 +107,6 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
 }
 
-
 void startCleaning()
 {
   Serial.write(128);
@@ -155,8 +154,6 @@ void sendInfoRoomba()
   client.publish("roomba/charging", battery_Current_mAh_send);
 }
 
-
-
 void setup() 
 {
   Serial.begin(115200);
@@ -173,7 +170,6 @@ void setup()
   ArduinoOTA.setHostname(mqtt_client_name);
   ArduinoOTA.setPassword((const char *)OTApassword);
   ArduinoOTA.begin();
-  //Serial.println("Ready");
 }
 
 void loop() 
