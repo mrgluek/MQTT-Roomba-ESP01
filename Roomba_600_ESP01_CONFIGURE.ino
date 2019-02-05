@@ -41,30 +41,31 @@ uint8_t tempBuf[10];
 
 //Functions
 
-void setup_wifi() 
+void setup_wifi()
 {
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) 
+  WiFi.mode(WIFI_STA);
+  while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
   }
 }
 
-void reconnect() 
+void reconnect()
 {
   // Loop until we're reconnected
   int retries = 0;
-  while (!client.connected()) 
+  while (!client.connected())
   {
     if(retries < 50)
     {
       // Attempt to connect
-      if (client.connect(mqtt_client_name, mqtt_user, mqtt_pass, "roomba/status", 0, 0, "Dead Somewhere")) 
+      if (client.connect(mqtt_client_name, mqtt_user, mqtt_pass, "roomba/status", 0, 0, "Dead Somewhere"))
       {
         // Once connected, publish an announcement...
         if(boot == false)
         {
-          client.publish("checkIn/roomba", "Reconnected"); 
+          client.publish("checkIn/roomba", "Reconnected");
         }
         if(boot == true)
         {
@@ -73,8 +74,8 @@ void reconnect()
         }
         // ... and resubscribe
         client.subscribe("roomba/commands");
-      } 
-      else 
+      }
+      else
       {
         retries++;
         // Wait 5 seconds before retrying
@@ -88,12 +89,12 @@ void reconnect()
   }
 }
 
-void callback(char* topic, byte* payload, unsigned int length) 
+void callback(char* topic, byte* payload, unsigned int length)
 {
   String newTopic = topic;
   payload[length] = '\0';
   String newPayload = String((char *)payload);
-  if (newTopic == "roomba/commands") 
+  if (newTopic == "roomba/commands")
   {
     if (newPayload == "start")
     {
@@ -129,7 +130,7 @@ void stopCleaning()
 
 void sendInfoRoomba()
 {
-  roomba.start(); 
+  roomba.start();
   roomba.getSensors(21, tempBuf, 1);
   battery_Voltage = tempBuf[0];
   delay(50);
@@ -146,7 +147,7 @@ void sendInfoRoomba()
     client.publish("roomba/battery", battery_percent_send);
   }
   if(battery_Total_mAh == 0)
-  {  
+  {
     client.publish("roomba/battery", "NO DATA");
   }
   String temp_str = String(battery_Voltage);
@@ -167,7 +168,7 @@ void stayAwakeHigh()
 
 
 
-void setup() 
+void setup()
 {
   pinMode(noSleepPin, OUTPUT);
   digitalWrite(noSleepPin, HIGH);
@@ -183,9 +184,9 @@ void setup()
   timer.setInterval(60000, stayAwakeLow);
 }
 
-void loop() 
+void loop()
 {
-  if (!client.connected()) 
+  if (!client.connected())
   {
     reconnect();
   }
