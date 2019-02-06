@@ -15,9 +15,7 @@ const int mqtt_port = YOUR_MQTT_SERVER_PORT;
 const char *mqtt_user = "YOUR_MQTT_USERNAME";
 const char *mqtt_pass = "YOUR_MQTT_PASSWORD";
 const char *mqtt_client_name = "Roomba"; // Client connections can't have the same connection name
-
-//pick an OTA password to use when updating over the air
-const char *OTApassword = "YOUR_OTA_PASSWORD";
+const char *OTApassword = "YOUR_OTA_PASSWORD"; //pick an OTA password to use when updating over the air
 const int OTAport = 8266;
 
 //USER CONFIGURED SECTION END//
@@ -153,13 +151,8 @@ void sendInfoRoomba()
   client.publish("roomba/charging", battery_Current_mAh_send);
 }
 
-<<<<<<< HEAD
-
 
 void setup()
-=======
-void setup()
->>>>>>> 119e0c942e64819b6d0c7508fe1ed24155ea6f7b
 {
   Serial.begin(115200);
   Serial.write(129);
@@ -179,12 +172,8 @@ void setup()
 
 void loop()
 {
-<<<<<<< HEAD
-  if (!client.connected())
-=======
   ArduinoOTA.handle();
   if (!client.connected())
->>>>>>> 119e0c942e64819b6d0c7508fe1ed24155ea6f7b
   {
     reconnect();
   }
