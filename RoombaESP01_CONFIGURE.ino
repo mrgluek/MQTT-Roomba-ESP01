@@ -3,9 +3,11 @@
 #include <ESP8266mDNS.h>
 #include <SimpleTimer.h>
 #include <Roomba.h>
-
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 
 //USER CONFIGURED SECTION START//
+
 const char* ssid = "YOUR_WIRELESS_SSID";
 const char* password = "YOUR_WIRELESS_SSID";
 const char* mqtt_server = "YOUR_MQTT_SERVER_ADDRESS";
@@ -13,14 +15,17 @@ const int mqtt_port = YOUR_MQTT_SERVER_PORT;
 const char *mqtt_user = "YOUR_MQTT_USERNAME";
 const char *mqtt_pass = "YOUR_MQTT_PASSWORD";
 const char *mqtt_client_name = "Roomba"; // Client connections can't have the same connection name
-//USER CONFIGURED SECTION END//
 
+//pick an OTA password to use when updating over the air
+const char *OTApassword = "YOUR_OTA_PASSWORD";
+const int OTAport = 8266;
+
+//USER CONFIGURED SECTION END//
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 SimpleTimer timer;
 Roomba roomba(&Serial, Roomba::Baud115200);
-
 
 // Variables
 bool boot = true;
@@ -36,6 +41,7 @@ uint8_t tempBuf[10];
 
 void setup_wifi()
 {
+  WiFi.hostname(mqtt_client_name);
   WiFi.begin(ssid, password);
   WiFi.mode(WIFI_STA);
   while (WiFi.status() != WL_CONNECTED)
@@ -100,7 +106,6 @@ void callback(char* topic, byte* payload, unsigned int length)
   }
 }
 
-
 void startCleaning()
 {
   Serial.write(128);
@@ -148,9 +153,13 @@ void sendInfoRoomba()
   client.publish("roomba/charging", battery_Current_mAh_send);
 }
 
+<<<<<<< HEAD
 
 
 void setup()
+=======
+void setup()
+>>>>>>> 119e0c942e64819b6d0c7508fe1ed24155ea6f7b
 {
   Serial.begin(115200);
   Serial.write(129);
@@ -161,16 +170,24 @@ void setup()
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
   timer.setInterval(5000, sendInfoRoomba);
+
+  ArduinoOTA.setPort(OTAport);
+  ArduinoOTA.setHostname(mqtt_client_name);
+  ArduinoOTA.setPassword((const char *)OTApassword);
+  ArduinoOTA.begin();
 }
 
 void loop()
 {
+<<<<<<< HEAD
   if (!client.connected())
+=======
+  ArduinoOTA.handle();
+  if (!client.connected())
+>>>>>>> 119e0c942e64819b6d0c7508fe1ed24155ea6f7b
   {
     reconnect();
   }
   client.loop();
   timer.run();
 }
-
-
